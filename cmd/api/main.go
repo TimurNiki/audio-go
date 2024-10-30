@@ -21,8 +21,7 @@ func main() {
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 		env: env.GetString("ENV", "development"),
-	
-	
+
 		auth: authConfig{
 			basic: basicConfig{
 				user: env.GetString("AUTH_BASIC_USER", "admin"),
@@ -34,10 +33,7 @@ func main() {
 				iss:    "audio",
 			},
 		},
-
-	
 	}
-
 
 	// Logger
 	logger := zap.Must(zap.NewProduction()).Sugar()
@@ -65,15 +61,12 @@ func main() {
 		cfg.auth.token.iss,
 	)
 
-
-
 	store := store.NewStorage(db)
 
 	app := &application{
 		config:        cfg,
 		store:         store,
 		authenticator: jwtAuthenticator,
-
 	}
 	mux := app.mount()
 

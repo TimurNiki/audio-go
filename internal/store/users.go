@@ -1,8 +1,8 @@
 package store
 
 import (
+	"context"
 	"database/sql"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -11,7 +11,6 @@ type User struct {
 	Email     string   `json:"email"`
 	Password  password `json:"-"`
 	CreatedAt string   `json:"created_at"`
-	IsActive  bool     `json:"is_active"`
 }
 
 type password struct {
@@ -33,4 +32,13 @@ func (p *password) Set(text string) error {
 
 type UserStore struct {
 	db *sql.DB
+}
+
+
+func (us *UserStore) SignIn(ctx context.Context, user *User) error {
+	
+}
+
+func (us *UserStore) SignUp(ctx context.Context, user *User) error {
+	
 }

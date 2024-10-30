@@ -14,8 +14,8 @@ var (
 
 type Storage struct{
 	Users interface{
-		Create(context.Context, *sql.Tx, *User) error
-
+		SignIn(context.Context,  *User) error
+		SignUp(context.Context, *User) error
 	}
 }
 

@@ -12,12 +12,14 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type application struct {
 	config        config
 	store         store.Storage
 	authenticator auth.Authenticator
+	logger        *zap.SugaredLogger
 }
 
 type config struct {
@@ -49,10 +51,11 @@ type dbConfig struct {
 	maxIdleTime  string
 }
 
-func (app *application) mount() http.Handler  {
-	r:=chi.NewRouter()
-}
+func (app *application) mount() http.Handler {
+	r := chi.NewRouter()
 
+	return r
+}
 
 func (app *application) run(mux http.Handler) error {
 	// Create a new HTTP server with specified configurations
