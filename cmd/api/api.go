@@ -53,6 +53,11 @@ type dbConfig struct {
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
+	r.Route("/v1", func (r chi.Router)  {
+		r.Get("/health", app.healthCheckHandler)
+
+	})
+
 	return r
 }
 
