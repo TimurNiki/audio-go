@@ -5,13 +5,13 @@ import (
 	"audio-go/internal/store"
 	"context"
 	"errors"
+	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type application struct {
@@ -53,7 +53,7 @@ type dbConfig struct {
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
-	r.Route("/v1", func (r chi.Router)  {
+	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
 
 	})
@@ -103,13 +103,14 @@ func (app *application) run(mux http.Handler) error {
 	err := srv.ListenAndServe()
 
 	// Check if the error returned is due to the server being closed intentionally
-	if !errors.Is(err, http.ErrServerClosed) {
-		return err // If it's a different error, return it
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		app.logger.Errorw("server failed to start", "error", err)
+		return err
 	}
-
 	// Wait for the shutdown signal to complete and retrieve any resulting error
 	err = <-shutdown
 	if err != nil {
+		app.logger.Errorw("error during shutdown", "error", err)
 		return err // Return any error that occurred during shutdown
 	}
 
