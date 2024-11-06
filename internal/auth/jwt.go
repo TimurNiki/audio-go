@@ -2,6 +2,8 @@ package auth // Declares the package name as 'auth'
 
 import (
 	"fmt" // Imports the 'fmt' package for formatted I/O
+	"time"
+
 	"github.com/golang-jwt/jwt/v5" // Imports the JWT package for handling JSON Web Tokens
 )
 
@@ -48,4 +50,16 @@ func (a *JWTAuthenticator) ValidateToken(token string) (*jwt.Token, error) {
 		jwt.WithIssuer(a.iss), // Validates the token's issuer
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}), // Ensures the token uses the specified signing method
 	)
+}
+
+
+// CreateStandardClaims creates standard JWT claims for a user
+func (a *JWTAuthenticator) CreateStandardClaims(userID int64, email string, duration time.Duration) jwt.MapClaims {
+	return jwt.MapClaims{
+		"sub":   userID,
+		"email": email,
+		"iss":   a.iss,
+		"aud":   a.aud,
+		"exp":   time.Now().Add(duration).Unix(),
+	}
 }

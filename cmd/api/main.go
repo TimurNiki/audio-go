@@ -5,9 +5,11 @@ import (
 	"audio-go/internal/db"
 	"audio-go/internal/env"
 	"audio-go/internal/store"
+	"time"
+
 	// "time"
-	"go.uber.org/zap"
 	_ "github.com/lib/pq" // Import the PostgreSQL driver
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -23,17 +25,17 @@ func main() {
 		},
 		env: env.GetString("ENV", "development"),
 
-		// auth: authConfig{
-		// 	basic: basicConfig{
-		// 		user: env.GetString("AUTH_BASIC_USER", "admin"),
-		// 		pass: env.GetString("AUTH_BASIC_PASS", "admin"),
-		// 	},
-		// 	token: tokenConfig{
-		// 		secret: env.GetString("AUTH_TOKEN_SECRET", "example"),
-		// 		exp:    time.Hour * 24 * 3, // 3 days
-		// 		iss:    "audio",
-		// 	},
-		// },
+		auth: authConfig{
+			basic: basicConfig{
+				user: env.GetString("AUTH_BASIC_USER", "admin"),
+				pass: env.GetString("AUTH_BASIC_PASS", "admin"),
+			},
+			token: tokenConfig{
+				secret: env.GetString("AUTH_TOKEN_SECRET", "example"),
+				exp:    time.Hour * 24 * 3, // 3 days
+				iss:    "audio",
+			},
+		},
 	}
 
 	// Logger
@@ -61,7 +63,7 @@ func main() {
 		cfg.auth.token.iss,
 	)
 
-	store := store.NewStorage(db)
+	store := store.NewStorage(db,*jwtAuthenticator )
 
 	app := &application{
 		config:        cfg,
