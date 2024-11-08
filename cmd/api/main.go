@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
+
 func main() {
 	addr:= "postgres://postgres:niki77@localhost:9595/postgres?sslmode=disable"
 

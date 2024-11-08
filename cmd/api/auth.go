@@ -1,24 +1,10 @@
-// main/auth.go
 package main
 
 import (
-	"encoding/json"
-	"net/http"
-	"context"
 	"audio-go/internal/store" // Adjust this import path according to your project structure
+	"context"
+	"net/http"
 )
-
-// AuthHandler handles authentication-related HTTP requests
-type AuthHandler struct {
-	UserStore *store.UserStore
-}
-
-// NewAuthHandler creates a new AuthHandler
-func NewAuthHandler(userStore *store.UserStore) *AuthHandler {
-	return &AuthHandler{
-		UserStore: userStore,
-	}
-}
 
 // SignInRequest represents the expected payload for sign-in
 type SignInRequest struct {
@@ -33,59 +19,63 @@ type SignUpRequest struct {
 }
 
 // SignIn handles user sign-in
-func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
 	var req SignInRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+	if err := readJSON(w, r, &req); err != nil {
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
 	// Use NewPassword to initialize the password field
 	user := &store.User{
-		Email: req.Email,
+		Email:    req.Email,
 		Password: *store.NewPassword(req.Password), // Initialize password with NewPassword constructor
 	}
 
-	resp, err := h.UserStore.SignIn(context.Background(), user)
+	// Call SignIn method from the store
+	resp, err := app.store.Users.SignIn(context.Background(), user)
 	if err != nil {
+		// Handle errors based on the type
 		switch err {
 		case store.ErrUserNotFound, store.ErrInvalidPassword:
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			app.badRequestResponse(w, r, err) // Bad request for invalid user or password
 		default:
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			app.internalServerError(w, r, err) // Internal error for other cases
 		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	// Send the successful response
+	writeJSON(w, http.StatusOK, resp) // Sending JWT token + user info back
 }
 
 // SignUp handles user sign-up
-func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
+func (app *application) SignUp(w http.ResponseWriter, r *http.Request) {
 	var req SignUpRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+	if err := readJSON(w, r, &req); err != nil {
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
 	// Use NewPassword to initialize the password field
 	user := &store.User{
-		Email: req.Email,
+		Email:    req.Email,
 		Password: *store.NewPassword(req.Password), // Initialize password with NewPassword constructor
 	}
 
-	resp, err := h.UserStore.SignUp(context.Background(), user)
+	// Call SignUp method from the store
+	resp, err := app.store.Users.SignUp(context.Background(), user)
 	if err != nil {
+		// Handle errors based on the type
 		switch err {
 		case store.ErrEmailTaken, store.ErrPasswordNotSet:
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			app.badRequestResponse(w, r, err) // Bad request for duplicate email or empty password
 		default:
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			app.internalServerError(w, r, err) // Internal error for other cases
 		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	// Send the successful response
+	writeJSON(w, http.StatusCreated, resp) // Created status for new user registration
 }
