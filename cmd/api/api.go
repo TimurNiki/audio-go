@@ -58,6 +58,12 @@ func (app *application) mount() http.Handler {
 
 	})
 
+	// Authentication routes
+	r.Route("/v1/auth", func(r chi.Router) {
+		r.Post("/signin", app.SignIn) // SignIn route
+		r.Post("/signup", app.SignUp) // SignUp route
+	})
+
 	return r
 }
 
