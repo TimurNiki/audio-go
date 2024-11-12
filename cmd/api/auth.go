@@ -32,8 +32,9 @@ func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
 		Password: *store.NewPassword(req.Password), // Initialize password with NewPassword constructor
 	}
 
+	ctx := context.Background()
 	// Call SignIn method from the store
-	resp, err := app.store.Users.SignIn(context.Background(), user)
+	resp, err := app.store.Users.SignIn(ctx, user)
 	if err != nil {
 		// Handle errors based on the type
 		switch err {
@@ -62,9 +63,9 @@ func (app *application) SignUp(w http.ResponseWriter, r *http.Request) {
 		Email:    req.Email,
 		Password: *store.NewPassword(req.Password), // Initialize password with NewPassword constructor
 	}
-
+	ctx := context.Background()
 	// Call SignUp method from the store
-	resp, err := app.store.Users.SignUp(context.Background(), user)
+	resp, err := app.store.Users.SignUp(ctx, user)
 	if err != nil {
 		// Handle errors based on the type
 		switch err {

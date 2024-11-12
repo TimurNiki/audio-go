@@ -84,6 +84,9 @@ type SignInResponse struct {
 // SignIn authenticates a user and returns a JWT token if successful
 func (us *UserStore) SignIn(ctx context.Context, user *User) (*SignInResponse, error) {
 	var storedHash []byte
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
 	// Retrieve stored password hash from the database
 	err := us.db.QueryRowContext(ctx, "SELECT id, password FROM users WHERE email = ?", user.Email).Scan(&user.ID, &storedHash)
 	if err != nil {
@@ -148,6 +151,8 @@ func (us *UserStore) SignUp(ctx context.Context, user *User) (*SignUpResponse, e
 		return nil, err
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
 	// Insert the new user into the database
 	result, err := us.db.ExecContext(ctx, "INSERT INTO users (email, password, created_at) VALUES (?, ?, NOW())", user.Email, user.Password.hash)
 	if err != nil {
