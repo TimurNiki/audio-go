@@ -64,7 +64,7 @@ func main() {
 		cfg.auth.token.iss,
 	)
 
-	store := store.NewStorage(db,*jwtAuthenticator )
+	store := store.NewStorage(db )
 
 	app := &application{
 		config:        cfg,

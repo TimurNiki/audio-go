@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ErrUserNotFound     = errors.New("user not found")
-	ErrInvalidPassword  = errors.New("invalid password")
-	ErrEmailTaken       = errors.New("email already taken")
-	ErrPasswordNotSet   = errors.New("password must be set before signing up")
+	ErrUserNotFound    = errors.New("user not found")
+	ErrInvalidPassword = errors.New("invalid password")
+	ErrEmailTaken      = errors.New("email already taken")
+	ErrPasswordNotSet  = errors.New("password must be set before signing up")
 )
 
 // User represents a user in the system

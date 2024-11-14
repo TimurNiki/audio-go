@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"time"
-	"audio-go/internal/auth" // Make sure to import the auth package where JWT authenticator is defined
+	// "audio-go/internal/auth" // Make sure to import the auth package where JWT authenticator is defined
 )
 
 var (
@@ -22,20 +22,14 @@ type Storage struct {
 }
 
 // NewStorage creates a new Storage instance and initializes UserStore
-func NewStorage(db *sql.DB, jwt auth.JWTAuthenticator) Storage {
+func NewStorage(db *sql.DB) Storage {
 	return Storage{
 		Users: &UserStore{
-			db:      db,
-			jwtAuth: &jwt, // Pass the jwt authenticator
+			db: db,
+			// jwtAuth: &jwt, // Pass the jwt authenticator
 		},
 	}
 }
-
-
-
-
-
-
 
 // package store
 
